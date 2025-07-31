@@ -1,37 +1,54 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Car, Eye, EyeOff, Key, MapPin } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import type React from "react";
+import { supabase } from "@/lib/supabase";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Car, Eye, EyeOff, Key, MapPin } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [userType, setUserType] = useState<"user" | "owner">("user")
+  const [showPassword, setShowPassword] = useState(false);
+  const [userType, setUserType] = useState<"user" | "owner">("user");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     rememberMe: false,
-  })
-  const router = useRouter()
+  });
+  const router = useRouter();
+
+  const handleLoginGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+    });
+
+    if (error) {
+      console.error("Login error", error.message);
+    }
+  };
 
   const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Mock login - in real app, this would authenticate with backend
     if (userType === "user") {
-      router.push("/user/dashboard")
+      router.push("/user/dashboard");
     } else {
-      router.push("/owner/dashboard")
+      router.push("/owner/dashboard");
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 dark:from-slate-900 dark:to-slate-800">
@@ -46,10 +63,15 @@ export default function LoginPage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Welcome Back</CardTitle>
-            <CardDescription>Sign in to your Park'n'Pal account</CardDescription>
+            <CardDescription>
+              Sign in to your Park'n'Pal account
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs value={userType} onValueChange={(value) => setUserType(value as "user" | "owner")}>
+            <Tabs
+              value={userType}
+              onValueChange={(value) => setUserType(value as "user" | "owner")}
+            >
               <TabsList className="mb-6 grid w-full grid-cols-2">
                 <TabsTrigger value="user" className="gap-2">
                   <Car className="h-4 w-4" />
@@ -69,7 +91,9 @@ export default function LoginPage() {
                       type="email"
                       placeholder="john.doe@example.com"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
                       required
                     />
                   </div>
@@ -80,7 +104,9 @@ export default function LoginPage() {
                         id="password"
                         type={showPassword ? "text" : "password"}
                         value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, password: e.target.value })
+                        }
                         required
                       />
                       <Button
@@ -90,7 +116,11 @@ export default function LoginPage() {
                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
                       >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
                       </Button>
                     </div>
                   </div>
@@ -98,7 +128,12 @@ export default function LoginPage() {
                     <Checkbox
                       id="remember"
                       checked={formData.rememberMe}
-                      onCheckedChange={(checked) => setFormData({ ...formData, rememberMe: checked as boolean })}
+                      onCheckedChange={(checked) =>
+                        setFormData({
+                          ...formData,
+                          rememberMe: checked as boolean,
+                        })
+                      }
                     />
                     <Label htmlFor="remember" className="text-sm">
                       Remember me
@@ -118,7 +153,9 @@ export default function LoginPage() {
                       type="email"
                       placeholder="manager@parkinglot.com"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
                       required
                     />
                   </div>
@@ -129,7 +166,9 @@ export default function LoginPage() {
                         id="owner-password"
                         type={showPassword ? "text" : "password"}
                         value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, password: e.target.value })
+                        }
                         required
                       />
                       <Button
@@ -139,7 +178,11 @@ export default function LoginPage() {
                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
                       >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
                       </Button>
                     </div>
                   </div>
@@ -147,7 +190,12 @@ export default function LoginPage() {
                     <Checkbox
                       id="owner-remember"
                       checked={formData.rememberMe}
-                      onCheckedChange={(checked) => setFormData({ ...formData, rememberMe: checked as boolean })}
+                      onCheckedChange={(checked) =>
+                        setFormData({
+                          ...formData,
+                          rememberMe: checked as boolean,
+                        })
+                      }
                     />
                     <Label htmlFor="owner-remember" className="text-sm">
                       Remember me
@@ -161,7 +209,10 @@ export default function LoginPage() {
             </Tabs>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Link href="/forgot-password" className="text-sm text-muted-foreground hover:underline">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-muted-foreground hover:underline"
+            >
               Forgot your password?
             </Link>
             <div className="text-center text-sm">
@@ -169,10 +220,16 @@ export default function LoginPage() {
               <Link href="/register" className="text-primary hover:underline">
                 Sign up
               </Link>
+              <button
+                onClick={handleLoginGoogle}
+                className="bg-blue-500 px-4 py-2 text-white rounded"
+              >
+                Sign in with Google
+              </button>
             </div>
           </CardFooter>
         </Card>
       </main>
     </div>
-  )
+  );
 }
