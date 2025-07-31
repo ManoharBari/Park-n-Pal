@@ -58,27 +58,65 @@
   }
 }
 
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+  .container {
+    @apply px-4;
+  }
+
+  /* Ensure mobile content doesn't get cut off by bottom nav */
+  .pb-mobile-nav {
+    @apply pb-20;
+  }
+
+  /* Mobile-optimized card spacing */
+  .mobile-card-spacing {
+    @apply space-y-3;
+  }
+
+  /* Mobile touch targets */
+  .mobile-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Map container styles */
 .map-container {
   width: 100%;
   height: 100%;
-  min-height: 400px;
+  min-height: 250px;
   position: relative;
-  background-color: #f0f4f8;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
   border-radius: 0.5rem;
   overflow: hidden;
 }
 
+@media (min-width: 768px) {
+  .map-container {
+    min-height: 400px;
+  }
+}
+
 .map-container.dark {
-  background-color: #1e293b;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 }
 
 .map-pin {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   position: absolute;
   transform: translate(-50%, -50%);
   cursor: pointer;
   transition: all 0.2s ease;
+  z-index: 10;
+}
+
+@media (min-width: 768px) {
+  .map-pin {
+    width: 30px;
+    height: 30px;
+  }
 }
 
 .map-pin:hover {
@@ -87,12 +125,91 @@
 
 .map-pin.available {
   color: #22c55e;
+  filter: drop-shadow(0 2px 4px rgba(34, 197, 94, 0.3));
 }
 
 .map-pin.booked {
   color: #f59e0b;
+  filter: drop-shadow(0 2px 4px rgba(245, 158, 11, 0.3));
 }
 
 .map-pin.occupied {
   color: #ef4444;
+  filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.3));
+}
+
+/* Mobile-optimized scrollbars */
+@media (max-width: 768px) {
+  .overflow-x-auto::-webkit-scrollbar {
+    height: 2px;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground));
+    border-radius: 1px;
+  }
+}
+
+/* Safe area handling for mobile devices */
+@supports (padding: max(0px)) {
+  .safe-area-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+}
+
+/* Mobile-first animations */
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+/* Mobile-optimized focus states */
+@media (max-width: 768px) {
+  .focus-visible\:ring-2:focus-visible {
+    @apply ring-2 ring-primary ring-offset-2;
+  }
+
+  /* Larger touch targets for mobile */
+  button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 44px;
+  }
+}
+
+/* Bottom navigation backdrop blur support */
+.bottom-nav-blur {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+@supports not (backdrop-filter: blur(8px)) {
+  .bottom-nav-blur {
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+
+  .dark .bottom-nav-blur {
+    background-color: rgba(0, 0, 0, 0.95);
+  }
 }

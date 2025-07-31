@@ -4,12 +4,10 @@ import { useState } from "react"
 import { UserSidebar } from "@/components/user/user-sidebar"
 import { MobileNav } from "@/components/user/mobile-nav"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   Dialog,
   DialogContent,
@@ -19,30 +17,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { CreditCard, DollarSign, Plus, Wallet } from "lucide-react"
+import { ArrowDownLeft, ArrowUpRight, CreditCard, DollarSign, Plus, TrendingUp, Wallet } from "lucide-react"
 
-// Mock data for payment methods and transactions
-const paymentMethods = [
-  {
-    id: "1",
-    type: "Credit Card",
-    last4: "1234",
-    brand: "Visa",
-    expiryMonth: 12,
-    expiryYear: 2025,
-    isDefault: true,
-  },
-  {
-    id: "2",
-    type: "Credit Card",
-    last4: "5678",
-    brand: "Mastercard",
-    expiryMonth: 8,
-    expiryYear: 2026,
-    isDefault: false,
-  },
-]
-
+// Mock data for transactions
 const transactions = [
   {
     id: "t1",
@@ -78,14 +55,46 @@ const transactions = [
   },
 ]
 
+// Mobile Transaction Card
+function MobileTransactionCard({ transaction }: { transaction: (typeof transactions)[0] }) {
+  const isPositive = transaction.amount > 0
+
+  return (
+    <div className="flex items-center justify-between py-3 border-b last:border-b-0">
+      <div className="flex items-center gap-3">
+        <div
+          className={`p-2 rounded-full ${
+            transaction.type === "payment"
+              ? "bg-red-100 text-red-600"
+              : transaction.type === "topup"
+                ? "bg-green-100 text-green-600"
+                : "bg-blue-100 text-blue-600"
+          }`}
+        >
+          {transaction.type === "payment" ? (
+            <ArrowUpRight className="h-4 w-4" />
+          ) : (
+            <ArrowDownLeft className="h-4 w-4" />
+          )}
+        </div>
+        <div>
+          <p className="text-sm font-medium">{transaction.description}</p>
+          <p className="text-xs text-muted-foreground">{transaction.date}</p>
+        </div>
+      </div>
+      <div className={`text-sm font-medium ${isPositive ? "text-green-600" : "text-red-600"}`}>
+        {isPositive ? "+" : ""}${Math.abs(transaction.amount).toFixed(2)}
+      </div>
+    </div>
+  )
+}
+
 export default function UserWallet() {
   const [walletBalance] = useState(42.75)
   const [topupAmount, setTopupAmount] = useState("")
   const [isTopupModalOpen, setIsTopupModalOpen] = useState(false)
-  const [isAddCardModalOpen, setIsAddCardModalOpen] = useState(false)
 
   const handleTopup = () => {
-    // Mock topup - in real app, this would process payment
     setIsTopupModalOpen(false)
     setTopupAmount("")
   }
@@ -93,231 +102,175 @@ export default function UserWallet() {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex flex-1">
-        <UserSidebar className="w-64" />
-        <main className="flex-1 pb-16 md:pb-0">
-          <div className="container mx-auto p-4 md:p-6">
-            <div className="mb-6">
+        <UserSidebar className="hidden w-64 md:block" />
+        <main className="flex-1 pb-20 md:pb-0">
+          {/* Mobile Header */}
+          <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+            <div className="flex h-16 items-center justify-between px-4">
+              <h1 className="text-lg font-semibold">Wallet</h1>
+              <Button variant="ghost" size="icon">
+                <Plus className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="container mx-auto p-4 space-y-6">
+            {/* Desktop Header */}
+            <div className="hidden md:block">
               <h1 className="text-2xl font-bold">Wallet</h1>
               <p className="text-muted-foreground">Manage your payment methods and wallet balance</p>
             </div>
 
-            <div className="mb-6 grid gap-4 md:grid-cols-3">
+            {/* Balance Card - Mobile Optimized */}
+            <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-sm opacity-90">Available Balance</p>
+                    <p className="text-3xl font-bold">${walletBalance.toFixed(2)}</p>
+                  </div>
+                  <div className="p-3 bg-white/20 rounded-full">
+                    <Wallet className="h-6 w-6" />
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <Dialog open={isTopupModalOpen} onOpenChange={setIsTopupModalOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="secondary" size="sm" className="flex-1">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Money
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Money to Wallet</DialogTitle>
+                        <DialogDescription>Choose an amount to add to your wallet balance.</DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                          <Label htmlFor="amount">Amount ($)</Label>
+                          <Input
+                            id="amount"
+                            type="number"
+                            step="0.01"
+                            min="5"
+                            max="500"
+                            value={topupAmount}
+                            onChange={(e) => setTopupAmount(e.target.value)}
+                            placeholder="Enter amount"
+                          />
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <Button variant="outline" onClick={() => setTopupAmount("25")}>
+                            $25
+                          </Button>
+                          <Button variant="outline" onClick={() => setTopupAmount("50")}>
+                            $50
+                          </Button>
+                          <Button variant="outline" onClick={() => setTopupAmount("100")}>
+                            $100
+                          </Button>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsTopupModalOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button onClick={handleTopup} disabled={!topupAmount || Number.parseFloat(topupAmount) < 5}>
+                          Add ${topupAmount || "0"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Button variant="secondary" size="sm" className="flex-1">
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    Pay
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Stats Cards - Mobile */}
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Wallet Balance</CardTitle>
-                  <Wallet className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">${walletBalance.toFixed(2)}</div>
-                  <p className="text-xs text-muted-foreground">Available for parking</p>
+                <CardContent className="p-4 text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <DollarSign className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div className="text-lg font-bold">$89.50</div>
+                  <div className="text-xs text-muted-foreground">This Month</div>
                 </CardContent>
               </Card>
+
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">This Month</CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">$89.50</div>
-                  <p className="text-xs text-muted-foreground">Total spent on parking</p>
+                <CardContent className="p-4 text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <TrendingUp className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <div className="text-lg font-bold">$12.30</div>
+                  <div className="text-xs text-muted-foreground">Savings</div>
                 </CardContent>
               </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">Savings</CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">$12.30</div>
-                  <p className="text-xs text-muted-foreground">Saved with Park'n'Pal</p>
+
+              <Card className="md:block hidden">
+                <CardContent className="p-4 text-center">
+                  <div className="flex items-center justify-center mb-2">
+                    <CreditCard className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <div className="text-lg font-bold">2</div>
+                  <div className="text-xs text-muted-foreground">Cards</div>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="mb-6 flex gap-4">
-              <Dialog open={isTopupModalOpen} onOpenChange={setIsTopupModalOpen}>
-                <DialogTrigger asChild>
-                  <Button className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add Money
+            {/* Recent Transactions - Mobile Optimized */}
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">Recent Activity</CardTitle>
+                  <Button variant="ghost" size="sm" className="text-primary">
+                    View All
                   </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add Money to Wallet</DialogTitle>
-                    <DialogDescription>Choose an amount to add to your wallet balance.</DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="amount">Amount ($)</Label>
-                      <Input
-                        id="amount"
-                        type="number"
-                        step="0.01"
-                        min="5"
-                        max="500"
-                        value={topupAmount}
-                        onChange={(e) => setTopupAmount(e.target.value)}
-                        placeholder="Enter amount"
-                      />
+                </div>
+              </CardHeader>
+              <CardContent className="px-4 pb-4">
+                <div className="space-y-1">
+                  {transactions.slice(0, 5).map((transaction) => (
+                    <MobileTransactionCard key={transaction.id} transaction={transaction} />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Payment Methods - Mobile */}
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Payment Methods</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between p-3 border rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-100 rounded-lg">
+                      <CreditCard className="h-4 w-4 text-blue-600" />
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      <Button variant="outline" onClick={() => setTopupAmount("25")}>
-                        $25
-                      </Button>
-                      <Button variant="outline" onClick={() => setTopupAmount("50")}>
-                        $50
-                      </Button>
-                      <Button variant="outline" onClick={() => setTopupAmount("100")}>
-                        $100
-                      </Button>
+                    <div>
+                      <p className="text-sm font-medium">Visa ending in 1234</p>
+                      <p className="text-xs text-muted-foreground">Expires 12/25</p>
                     </div>
                   </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsTopupModalOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button onClick={handleTopup} disabled={!topupAmount || Number.parseFloat(topupAmount) < 5}>
-                      Add ${topupAmount || "0"}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-              <Button variant="outline">Auto Top-up Settings</Button>
-            </div>
+                  <Badge variant="secondary" className="text-xs">
+                    Default
+                  </Badge>
+                </div>
 
-            <Tabs defaultValue="transactions" className="w-full">
-              <TabsList className="mb-4 grid w-full grid-cols-2">
-                <TabsTrigger value="transactions">Transaction History</TabsTrigger>
-                <TabsTrigger value="payment-methods">Payment Methods</TabsTrigger>
-              </TabsList>
-              <TabsContent value="transactions">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Recent Transactions</CardTitle>
-                    <CardDescription>Your recent wallet activity and parking payments</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Description</TableHead>
-                          <TableHead>Type</TableHead>
-                          <TableHead className="text-right">Amount</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {transactions.map((transaction) => (
-                          <TableRow key={transaction.id}>
-                            <TableCell>{transaction.date}</TableCell>
-                            <TableCell>{transaction.description}</TableCell>
-                            <TableCell>
-                              <Badge
-                                variant={
-                                  transaction.type === "payment"
-                                    ? "destructive"
-                                    : transaction.type === "topup"
-                                      ? "default"
-                                      : "secondary"
-                                }
-                              >
-                                {transaction.type}
-                              </Badge>
-                            </TableCell>
-                            <TableCell
-                              className={`text-right font-medium ${
-                                transaction.amount > 0 ? "text-green-600" : "text-red-600"
-                              }`}
-                            >
-                              {transaction.amount > 0 ? "+" : ""}${Math.abs(transaction.amount).toFixed(2)}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              <TabsContent value="payment-methods">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between">
-                    <div>
-                      <CardTitle>Payment Methods</CardTitle>
-                      <CardDescription>Manage your saved payment methods</CardDescription>
-                    </div>
-                    <Dialog open={isAddCardModalOpen} onOpenChange={setIsAddCardModalOpen}>
-                      <DialogTrigger asChild>
-                        <Button className="gap-2">
-                          <Plus className="h-4 w-4" />
-                          Add Card
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Add Payment Method</DialogTitle>
-                          <DialogDescription>Add a new credit or debit card to your account.</DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                          <div className="grid gap-2">
-                            <Label htmlFor="cardNumber">Card Number</Label>
-                            <Input id="cardNumber" placeholder="1234 5678 9012 3456" />
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="grid gap-2">
-                              <Label htmlFor="expiry">Expiry Date</Label>
-                              <Input id="expiry" placeholder="MM/YY" />
-                            </div>
-                            <div className="grid gap-2">
-                              <Label htmlFor="cvv">CVV</Label>
-                              <Input id="cvv" placeholder="123" />
-                            </div>
-                          </div>
-                          <div className="grid gap-2">
-                            <Label htmlFor="cardName">Cardholder Name</Label>
-                            <Input id="cardName" placeholder="John Doe" />
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <Button variant="outline" onClick={() => setIsAddCardModalOpen(false)}>
-                            Cancel
-                          </Button>
-                          <Button onClick={() => setIsAddCardModalOpen(false)}>Add Card</Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {paymentMethods.map((method) => (
-                        <div key={method.id} className="flex items-center justify-between rounded-lg border p-4">
-                          <div className="flex items-center gap-3">
-                            <CreditCard className="h-8 w-8 text-muted-foreground" />
-                            <div>
-                              <div className="font-medium">
-                                {method.brand} ending in {method.last4}
-                              </div>
-                              <div className="text-sm text-muted-foreground">
-                                Expires {method.expiryMonth.toString().padStart(2, "0")}/{method.expiryYear}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {method.isDefault && <Badge variant="secondary">Default</Badge>}
-                            <Button variant="ghost" size="sm">
-                              Edit
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-destructive">
-                              Remove
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
+                <Button variant="outline" className="w-full bg-transparent">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Payment Method
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </main>
       </div>

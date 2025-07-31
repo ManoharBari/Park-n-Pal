@@ -7,9 +7,10 @@ import { LiveMap } from "@/components/shared/live-map"
 import { SlotCard } from "@/components/shared/slot-card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Slider } from "@/components/ui/slider"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Filter, Search } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Bell, Filter, MapPin, Search, User } from "lucide-react"
 
 // Mock data for parking slots
 const mockSlots = [
@@ -53,102 +54,189 @@ const mockSlots = [
     distance: "1.2 miles",
     position: { x: 40, y: 70 },
   },
-  {
-    id: "5",
-    name: "Central Park E5",
-    address: "555 Park Ave",
-    price: 3.5,
-    status: "available" as const,
-    timeWindow: "9:00 AM - 6:00 PM",
-    distance: "0.9 miles",
-    position: { x: 60, y: 20 },
-  },
 ]
 
 export default function UserDashboard() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [priceRange, setPriceRange] = useState([0, 10])
-  const [availability, setAvailability] = useState("all")
 
-  // Filter slots based on search, price range, and availability
+  // Filter slots based on search
   const filteredSlots = mockSlots.filter((slot) => {
     const matchesSearch =
       slot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       slot.address.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesPrice = slot.price >= priceRange[0] && slot.price <= priceRange[1]
-    const matchesAvailability = availability === "all" || slot.status === availability
-
-    return matchesSearch && matchesPrice && matchesAvailability
+    return matchesSearch
   })
 
   return (
     <div className="flex min-h-screen flex-col">
+      {/* Desktop Sidebar */}
       <div className="flex flex-1">
-        <UserSidebar className="w-64" />
-        <main className="flex-1 pb-16 md:pb-0">
-          <div className="container mx-auto p-4 md:p-6">
-            <div className="mb-6">
+        <UserSidebar className="hidden w-64 md:block" />
+
+        {/* Main Content */}
+        <main className="flex-1 pb-20 md:pb-0">
+          {/* Mobile Header */}
+          <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+            <div className="flex h-16 items-center justify-between px-4">
+              <div className="flex items-center gap-3">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src="/placeholder.svg?height=32&width=32" />
+                  <AvatarFallback>
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium">Good morning</p>
+                  <p className="text-xs text-muted-foreground">John Doe</p>
+                </div>
+              </div>
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5" />
+                <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 text-[10px] font-medium text-white flex items-center justify-center">
+                  2
+                </span>
+              </Button>
+            </div>
+          </div>
+
+          <div className="container mx-auto p-4 space-y-6">
+            {/* Desktop Header */}
+            <div className="hidden md:block">
               <h1 className="text-2xl font-bold">Find Parking</h1>
               <p className="text-muted-foreground">Discover available parking spots near you</p>
             </div>
 
-            <div className="mb-6 grid gap-4 md:grid-cols-[1fr_auto]">
+            {/* Search Section */}
+            <div className="space-y-4">
               <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  placeholder="Search by location or address..."
-                  className="pl-8"
+                  placeholder="Where do you want to park?"
+                  className="pl-10 h-12 text-base"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
-              <div className="flex gap-2">
-                <Select value={availability} onValueChange={setAvailability}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Availability" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Slots</SelectItem>
-                    <SelectItem value="available">Available Only</SelectItem>
-                    <SelectItem value="booked">Booked Only</SelectItem>
-                    <SelectItem value="occupied">Occupied Only</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button variant="outline" size="icon">
+
+              {/* Quick Filters - Mobile */}
+              <div className="flex gap-2 overflow-x-auto pb-2 md:hidden">
+                <Badge variant="secondary" className="whitespace-nowrap">
+                  <MapPin className="mr-1 h-3 w-3" />
+                  Nearby
+                </Badge>
+                <Badge variant="outline" className="whitespace-nowrap">
+                  Available Now
+                </Badge>
+                <Badge variant="outline" className="whitespace-nowrap">
+                  Under $5
+                </Badge>
+                <Badge variant="outline" className="whitespace-nowrap">
+                  24 Hours
+                </Badge>
+              </div>
+
+              {/* Desktop Filters */}
+              <div className="hidden md:flex items-center gap-4">
+                <Button variant="outline" size="sm" className="gap-2 bg-transparent">
                   <Filter className="h-4 w-4" />
+                  Filters
+                </Button>
+                <Badge variant="secondary">
+                  <MapPin className="mr-1 h-3 w-3" />
+                  Nearby
+                </Badge>
+                <Badge variant="outline">Available Now</Badge>
+                <Badge variant="outline">Under $5</Badge>
+              </div>
+            </div>
+
+            {/* Quick Stats - Mobile */}
+            <div className="grid grid-cols-3 gap-3 md:hidden">
+              <Card className="p-3">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-green-600">24</div>
+                  <div className="text-xs text-muted-foreground">Available</div>
+                </div>
+              </Card>
+              <Card className="p-3">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-blue-600">0.3mi</div>
+                  <div className="text-xs text-muted-foreground">Nearest</div>
+                </div>
+              </Card>
+              <Card className="p-3">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-purple-600">$4.75</div>
+                  <div className="text-xs text-muted-foreground">From</div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Map Section */}
+            <Card className="overflow-hidden">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Nearby Parking</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="h-[250px] md:h-[400px]">
+                  <LiveMap slots={mockSlots} />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Available Spots */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold md:text-xl">Available Spots</h2>
+                <Button variant="ghost" size="sm" className="text-primary">
+                  View All
                 </Button>
               </div>
-            </div>
 
-            <div className="mb-6">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="text-sm font-medium">
-                  Price Range: ${priceRange[0]} - ${priceRange[1]}
-                </span>
+              {/* Mobile: Horizontal scroll */}
+              <div className="flex gap-4 overflow-x-auto pb-2 md:hidden">
+                {filteredSlots.slice(0, 3).map((slot) => (
+                  <div key={slot.id} className="min-w-[280px]">
+                    <SlotCard {...slot} />
+                  </div>
+                ))}
               </div>
-              <Slider
-                defaultValue={[0, 10]}
-                max={10}
-                step={0.5}
-                value={priceRange}
-                onValueChange={setPriceRange}
-                className="py-4"
-              />
+
+              {/* Desktop: Grid */}
+              <div className="hidden md:grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {filteredSlots.map((slot) => (
+                  <SlotCard key={slot.id} {...slot} />
+                ))}
+              </div>
             </div>
 
-            <div className="mb-6 h-[400px]">
-              <LiveMap slots={mockSlots} />
-            </div>
-
-            <h2 className="mb-4 text-xl font-semibold">Nearby Parking Spots</h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredSlots.map((slot) => (
-                <SlotCard key={slot.id} {...slot} />
-              ))}
-            </div>
+            {/* Recent Activity - Mobile */}
+            <Card className="md:hidden">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Recent Activity</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Booking confirmed</p>
+                    <p className="text-xs text-muted-foreground">Downtown Parking A1 • 2 hours ago</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Payment successful</p>
+                    <p className="text-xs text-muted-foreground">$11.00 • Yesterday</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
       <MobileNav />
     </div>
   )
