@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../lib/generated/prisma"
 }
 
 datasource db {
@@ -14,7 +13,8 @@ model User {
   email         String    @unique
   password      String
   phone         String?
-  role          Role      @default(USER)
+  companyName   String?
+  role          Role      @default(user)
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
   vehicles      Vehicle[]
@@ -133,7 +133,6 @@ model Availability {
 }
 
 enum Role {
-  USER
-  HOST
-  ADMIN
+ user
+ owner
 }

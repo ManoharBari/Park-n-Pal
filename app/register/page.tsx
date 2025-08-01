@@ -31,7 +31,6 @@ export default function RegisterPage() {
     password: "",
     confirmPassword: "",
     companyName: "",
-    businessLicense: "",
     agreeToTerms: false,
   });
   const router = useRouter();
@@ -39,26 +38,39 @@ export default function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+    try {
+      const res = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone,
+          companyName: formData.companyName,
+          role: userType,
+        }),
+      });
 
-    if (!res.ok) {
-      const err = await res.json();
-      alert("Login failed: " + err.error);
-      return;
-    }
+      const data = await res.json();
 
-    const { user } = await res.json();
-
-    if (user) {
-      if (userType === "user") {
-        router.push("/user/dashboard");
-      } else {
-        router.push("/owner/dashboard");
+      if (!res.ok) {
+        if (data.errors) {
+          const errorMessages = data.errors
+            .map((err: any) => err.message)
+            .join(", ");
+          alert("Validation failed: " + errorMessages);
+        } else {
+          alert("Signup failed: " + data.message);
+        }
+        return;
       }
+
+      alert("Account created successfully! Please login.");
+      router.push("/login");
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -284,22 +296,7 @@ export default function RegisterPage() {
                       required
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="businessLicense">
-                      Business License Number
-                    </Label>
-                    <Input
-                      id="businessLicense"
-                      value={formData.businessLicense}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          businessLicense: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="ownerPassword">Password</Label>
                     <div className="relative">

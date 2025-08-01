@@ -33,29 +33,52 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: formData.email,
-        password: formData.password,
-      }),
-    });
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-    if (!res.ok) {
-      const err = await res.json();
-      alert("Login failed: " + err.error);
-      return;
-    }
+      const data = await res.json();
 
-    const { user } = await res.json();
-
-    if (user) {
-      if (userType === "user") {
-        router.push("/user/dashboard");
-      } else {
-        router.push("/owner/dashboard");
+      if (!res.ok) {
+        // Handle different error types
+        if (data.errors) {
+          // Validation errors
+          const errorMessages = data.errors
+            .map((err: any) => err.message)
+            .join(", ");
+          alert("Validation failed: " + errorMessages);
+        } else {
+          // General error (like invalid credentials)
+          alert("Login failed: " + data.message);
+        }
+        return;
       }
+
+      // Success - extract token and user
+      const { token, user } = data;
+
+      // Store token (choose one method)
+      localStorage.setItem("authToken", token);
+      // OR use cookies for better security
+      // document.cookie = `authToken=${token}; path=/; httpOnly; secure; samesite=strict`;
+
+      if (user) {
+        // Route based on user role from the API response
+        if (user.role === "user") {
+          router.push("/user/dashboard");
+        } else {
+          router.push("/owner/dashboard"); 
+        }
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An unexpected error occurred. Please try again.");
     }
   };
 
