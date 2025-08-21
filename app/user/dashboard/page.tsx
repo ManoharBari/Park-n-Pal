@@ -68,44 +68,49 @@ export default function UserDashboard() {
   })
 
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Desktop Sidebar */}
-      <div className="flex flex-1">
-        <UserSidebar className="hidden w-64 md:block" />
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Desktop Sidebar - Fixed */}
+      <UserSidebar />
 
-        {/* Main Content */}
-        <main className="flex-1 pb-20 md:pb-0">
-          {/* Mobile Header */}
-          <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
-            <div className="flex h-16 items-center justify-between px-4">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                  <AvatarFallback>
-                    <User className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-sm font-medium">Good morning</p>
-                  <p className="text-xs text-muted-foreground">John Doe</p>
-                </div>
+      {/* Main Content Area */}
+      <div className="flex-1 md:ml-64">
+        {/* Mobile Header */}
+        <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+          <div className="flex h-16 items-center justify-between px-4">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src="/placeholder.svg?height=32&width=32" />
+                <AvatarFallback>
+                  <User className="h-4 w-4" />
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm font-medium">Good morning</p>
+                <p className="text-xs text-muted-foreground">John Doe</p>
               </div>
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 text-[10px] font-medium text-white flex items-center justify-center">
-                  2
-                </span>
-              </Button>
+            </div>
+            <Button variant="ghost" size="icon" className="relative">
+              <Bell className="h-5 w-5" />
+              <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500 text-[10px] font-medium text-white flex items-center justify-center">
+                2
+              </span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Scrollable Content Area */}
+        <div className="h-screen overflow-y-auto pb-20 md:pb-0">
+          {/* Desktop Header */}
+          <div className="hidden md:block">
+            <div className="container mx-auto p-4 md:p-6">
+              <div className="mb-6">
+                <h1 className="text-2xl font-bold">Find Parking</h1>
+                <p className="text-muted-foreground">Discover available parking spots near you</p>
+              </div>
             </div>
           </div>
 
           <div className="container mx-auto p-4 space-y-6">
-            {/* Desktop Header */}
-            <div className="hidden md:block">
-              <h1 className="text-2xl font-bold">Find Parking</h1>
-              <p className="text-muted-foreground">Discover available parking spots near you</p>
-            </div>
-
             {/* Search Section */}
             <div className="space-y-4">
               <div className="relative">
@@ -233,7 +238,7 @@ export default function UserDashboard() {
               </CardContent>
             </Card>
           </div>
-        </main>
+        </div>
       </div>
 
       {/* Mobile Bottom Navigation */}

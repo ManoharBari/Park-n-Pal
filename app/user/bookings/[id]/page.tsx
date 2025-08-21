@@ -26,21 +26,38 @@ export default function BookingDetails({ params }: { params: { id: string } }) {
   const booking = mockBooking
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="flex flex-1">
-        <UserSidebar className="w-64" />
-        <main className="flex-1 pb-16 md:pb-0">
-          <div className="container mx-auto p-4 md:p-6">
-            <div className="mb-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-2xl font-bold">Booking Details</h1>
-                  <p className="text-muted-foreground">Booking #{params.id}</p>
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Desktop Sidebar - Fixed */}
+      <UserSidebar className="w-64" />
+
+      {/* Main Content Area */}
+      <div className="flex-1 md:ml-64">
+        {/* Mobile Header */}
+        <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+          <div className="flex h-16 items-center justify-between px-4">
+            <h1 className="text-lg font-semibold">Booking Details</h1>
+            <StatusBadge status={booking.status} />
+          </div>
+        </div>
+
+        {/* Scrollable Content Area */}
+        <div className="h-screen overflow-y-auto pb-20 md:pb-0">
+          {/* Desktop Header */}
+          <div className="hidden md:block">
+            <div className="container mx-auto p-4 md:p-6">
+              <div className="mb-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h1 className="text-2xl font-bold">Booking Details</h1>
+                    <p className="text-muted-foreground">Booking #{params.id}</p>
+                  </div>
+                  <StatusBadge status={booking.status} />
                 </div>
-                <StatusBadge status={booking.status} />
               </div>
             </div>
+          </div>
 
+          <div className="container mx-auto p-4 md:p-6">
             <div className="grid gap-6 md:grid-cols-2">
               <Card>
                 <CardHeader>
@@ -109,7 +126,7 @@ export default function BookingDetails({ params }: { params: { id: string } }) {
                 </CardContent>
                 <CardFooter className="flex justify-end">
                   {booking.status === "completed" && (
-                    <Button variant="outline" className="gap-2">
+                    <Button variant="outline" className="gap-2 bg-transparent">
                       <Download className="h-4 w-4" />
                       Download Receipt
                     </Button>
@@ -148,8 +165,10 @@ export default function BookingDetails({ params }: { params: { id: string } }) {
               {booking.status === "upcoming" && <Button variant="destructive">Cancel Booking</Button>}
             </div>
           </div>
-        </main>
+        </div>
       </div>
+
+      {/* Mobile Navigation */}
       <MobileNav />
     </div>
   )

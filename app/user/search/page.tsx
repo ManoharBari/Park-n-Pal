@@ -95,31 +95,38 @@ export default function SearchPage() {
     })
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="flex flex-1">
-        <UserSidebar className="hidden w-64 md:block" />
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Desktop Sidebar - Fixed */}
+      <UserSidebar className="hidden w-64 md:block" />
 
-        <main className="flex-1 pb-20 md:pb-0">
-          {/* Mobile Header */}
-          <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
-            <div className="flex h-16 items-center gap-4 px-4">
-              <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8">
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <h1 className="flex-1 text-lg font-semibold">Search Parking</h1>
-              <Button variant="ghost" size="icon" onClick={() => setShowFilters(!showFilters)} className="h-8 w-8">
-                <SlidersHorizontal className="h-4 w-4" />
-              </Button>
+      {/* Main Content Area */}
+      <div className="flex-1 md:ml-64">
+        {/* Mobile Header */}
+        <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+          <div className="flex h-16 items-center gap-4 px-4">
+            <Button variant="ghost" size="icon" onClick={() => router.back()} className="h-8 w-8">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="flex-1 text-lg font-semibold">Search Parking</h1>
+            <Button variant="ghost" size="icon" onClick={() => setShowFilters(!showFilters)} className="h-8 w-8">
+              <SlidersHorizontal className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Scrollable Content Area */}
+        <div className="h-screen overflow-y-auto pb-20 md:pb-0">
+          {/* Desktop Header */}
+          <div className="hidden md:block">
+            <div className="container mx-auto p-4 md:p-6">
+              <div className="mb-6">
+                <h1 className="text-2xl font-bold">Search Parking</h1>
+                <p className="text-muted-foreground">Find the perfect parking spot</p>
+              </div>
             </div>
           </div>
 
           <div className="container mx-auto p-4 space-y-6">
-            {/* Desktop Header */}
-            <div className="hidden md:block">
-              <h1 className="text-2xl font-bold">Search Parking</h1>
-              <p className="text-muted-foreground">Find the perfect parking spot</p>
-            </div>
-
             {/* Search Bar */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -220,9 +227,10 @@ export default function SearchPage() {
               </Button>
             </div>
           </div>
-        </main>
+        </div>
       </div>
 
+      {/* Mobile Navigation */}
       <MobileNav />
     </div>
   )

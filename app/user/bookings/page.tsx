@@ -119,29 +119,37 @@ function MobileBookingCard({ booking }: { booking: (typeof mockBookings)[0] }) {
 
 export default function UserBookings() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="flex flex-1">
-        <UserSidebar className="hidden w-64 md:block" />
-        <main className="flex-1 pb-20 md:pb-0">
-          {/* Mobile Header */}
-          <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
-            <div className="flex h-16 items-center justify-between px-4">
-              <h1 className="text-lg font-semibold">My Bookings</h1>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="text-xs">
-                  {upcomingBookings.length} Active
-                </Badge>
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Desktop Sidebar - Fixed */}
+      <UserSidebar />
+
+      {/* Main Content Area */}
+      <div className="flex-1 md:ml-64">
+        {/* Mobile Header */}
+        <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+          <div className="flex h-16 items-center justify-between px-4">
+            <h1 className="text-lg font-semibold">My Bookings</h1>
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="text-xs">
+                {upcomingBookings.length} Active
+              </Badge>
+            </div>
+          </div>
+        </div>
+
+        {/* Scrollable Content Area */}
+        <div className="h-screen overflow-y-auto pb-20 md:pb-0">
+          {/* Desktop Header */}
+          <div className="hidden md:block">
+            <div className="container mx-auto p-4 md:p-6">
+              <div className="mb-6">
+                <h1 className="text-2xl font-bold">My Bookings</h1>
+                <p className="text-muted-foreground">Manage your parking reservations</p>
               </div>
             </div>
           </div>
 
           <div className="container mx-auto p-4">
-            {/* Desktop Header */}
-            <div className="mb-6 hidden md:block">
-              <h1 className="text-2xl font-bold">My Bookings</h1>
-              <p className="text-muted-foreground">Manage your parking reservations</p>
-            </div>
-
             <Tabs defaultValue="upcoming" className="w-full">
               <TabsList className="mb-4 grid w-full grid-cols-2">
                 <TabsTrigger value="upcoming" className="text-sm">
@@ -210,8 +218,10 @@ export default function UserBookings() {
               </TabsContent>
             </Tabs>
           </div>
-        </main>
+        </div>
       </div>
+
+      {/* Mobile Navigation */}
       <MobileNav />
     </div>
   )

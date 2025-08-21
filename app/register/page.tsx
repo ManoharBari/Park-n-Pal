@@ -1,78 +1,44 @@
-"use client";
+"use client"
 
-import type React from "react";
+import type React from "react"
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Car, Eye, EyeOff, Key, MapPin } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Car, Eye, EyeOff, Key, MapPin } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function RegisterPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [userType, setUserType] = useState<"user" | "owner">("user");
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [userType, setUserType] = useState<"user" | "owner">("user")
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     phone: "",
     password: "",
     confirmPassword: "",
     companyName: "",
+    businessLicense: "",
     agreeToTerms: false,
-  });
-  const router = useRouter();
+  })
+  const router = useRouter()
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      const res = await fetch("/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          phone: formData.phone,
-          companyName: formData.companyName,
-          role: userType,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (data.errors) {
-          const errorMessages = data.errors
-            .map((err: any) => err.message)
-            .join(", ");
-          alert("Validation failed: " + errorMessages);
-        } else {
-          alert("Signup failed: " + data.message);
-        }
-        return;
-      }
-
-      alert("Account created successfully! Please login.");
-      router.push("/login");
-    } catch (error) {
-      console.error("Signup error:", error);
-      alert("An unexpected error occurred. Please try again.");
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Mock registration - in real app, this would register with backend
+    if (userType === "user") {
+      router.push("/user/dashboard")
+    } else {
+      router.push("/owner/dashboard")
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 dark:from-slate-900 dark:to-slate-800">
@@ -87,15 +53,10 @@ export default function RegisterPage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Create Account</CardTitle>
-            <CardDescription>
-              Join Park'n'Pal and start parking smarter
-            </CardDescription>
+            <CardDescription>Join Park'n'Pal and start parking smarter</CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs
-              value={userType}
-              onValueChange={(value) => setUserType(value as "user" | "owner")}
-            >
+            <Tabs value={userType} onValueChange={(value) => setUserType(value as "user" | "owner")}>
               <TabsList className="mb-6 grid w-full grid-cols-2">
                 <TabsTrigger value="user" className="gap-2">
                   <Car className="h-4 w-4" />
@@ -108,30 +69,33 @@ export default function RegisterPage() {
               </TabsList>
               <TabsContent value="user">
                 <form onSubmit={handleRegister} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Name</Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          name: e.target.value,
-                        })
-                      }
-                      required
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">First Name</Label>
+                      <Input
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">Last Name</Label>
+                      <Input
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                        required
+                      />
+                    </div>
                   </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
                       type="email"
                       value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       required
                     />
                   </div>
@@ -141,9 +105,7 @@ export default function RegisterPage() {
                       id="phone"
                       type="tel"
                       value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       required
                     />
                   </div>
@@ -154,9 +116,7 @@ export default function RegisterPage() {
                         id="password"
                         type={showPassword ? "text" : "password"}
                         value={formData.password}
-                        onChange={(e) =>
-                          setFormData({ ...formData, password: e.target.value })
-                        }
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         required
                       />
                       <Button
@@ -166,11 +126,7 @@ export default function RegisterPage() {
                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
                       >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
                     </div>
                   </div>
@@ -181,12 +137,7 @@ export default function RegisterPage() {
                         id="confirmPassword"
                         type={showConfirmPassword ? "text" : "password"}
                         value={formData.confirmPassword}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            confirmPassword: e.target.value,
-                          })
-                        }
+                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                         required
                       />
                       <Button
@@ -194,15 +145,9 @@ export default function RegisterPage() {
                         variant="ghost"
                         size="icon"
                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
                     </div>
                   </div>
@@ -210,27 +155,16 @@ export default function RegisterPage() {
                     <Checkbox
                       id="terms"
                       checked={formData.agreeToTerms}
-                      onCheckedChange={(checked) =>
-                        setFormData({
-                          ...formData,
-                          agreeToTerms: checked as boolean,
-                        })
-                      }
+                      onCheckedChange={(checked) => setFormData({ ...formData, agreeToTerms: checked as boolean })}
                       required
                     />
                     <Label htmlFor="terms" className="text-sm">
                       I agree to the{" "}
-                      <Link
-                        href="/terms"
-                        className="text-primary hover:underline"
-                      >
+                      <Link href="/terms" className="text-primary hover:underline">
                         Terms of Service
                       </Link>{" "}
                       and{" "}
-                      <Link
-                        href="/privacy"
-                        className="text-primary hover:underline"
-                      >
+                      <Link href="/privacy" className="text-primary hover:underline">
                         Privacy Policy
                       </Link>
                     </Label>
@@ -247,40 +181,37 @@ export default function RegisterPage() {
                     <Input
                       id="companyName"
                       value={formData.companyName}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          companyName: e.target.value,
-                        })
-                      }
+                      onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                       required
                     />
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="ownerName">Name</Label>
-                    <Input
-                      id="ownerName"
-                      value={formData.name}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          name: e.target.value,
-                        })
-                      }
-                      required
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="ownerFirstName">First Name</Label>
+                      <Input
+                        id="ownerFirstName"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="ownerLastName">Last Name</Label>
+                      <Input
+                        id="ownerLastName"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                        required
+                      />
+                    </div>
                   </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="ownerEmail">Business Email</Label>
                     <Input
                       id="ownerEmail"
                       type="email"
                       value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       required
                     />
                   </div>
@@ -290,13 +221,19 @@ export default function RegisterPage() {
                       id="ownerPhone"
                       type="tel"
                       value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({ ...formData, phone: e.target.value })
-                      }
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       required
                     />
                   </div>
-
+                  <div className="space-y-2">
+                    <Label htmlFor="businessLicense">Business License Number</Label>
+                    <Input
+                      id="businessLicense"
+                      value={formData.businessLicense}
+                      onChange={(e) => setFormData({ ...formData, businessLicense: e.target.value })}
+                      required
+                    />
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="ownerPassword">Password</Label>
                     <div className="relative">
@@ -304,9 +241,7 @@ export default function RegisterPage() {
                         id="ownerPassword"
                         type={showPassword ? "text" : "password"}
                         value={formData.password}
-                        onChange={(e) =>
-                          setFormData({ ...formData, password: e.target.value })
-                        }
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         required
                       />
                       <Button
@@ -316,29 +251,18 @@ export default function RegisterPage() {
                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
                       >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="ownerConfirmPassword">
-                      Confirm Password
-                    </Label>
+                    <Label htmlFor="ownerConfirmPassword">Confirm Password</Label>
                     <div className="relative">
                       <Input
                         id="ownerConfirmPassword"
                         type={showConfirmPassword ? "text" : "password"}
                         value={formData.confirmPassword}
-                        onChange={(e) =>
-                          setFormData({
-                            ...formData,
-                            confirmPassword: e.target.value,
-                          })
-                        }
+                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                         required
                       />
                       <Button
@@ -346,15 +270,9 @@ export default function RegisterPage() {
                         variant="ghost"
                         size="icon"
                         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       >
-                        {showConfirmPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </Button>
                     </div>
                   </div>
@@ -362,27 +280,16 @@ export default function RegisterPage() {
                     <Checkbox
                       id="ownerTerms"
                       checked={formData.agreeToTerms}
-                      onCheckedChange={(checked) =>
-                        setFormData({
-                          ...formData,
-                          agreeToTerms: checked as boolean,
-                        })
-                      }
+                      onCheckedChange={(checked) => setFormData({ ...formData, agreeToTerms: checked as boolean })}
                       required
                     />
                     <Label htmlFor="ownerTerms" className="text-sm">
                       I agree to the{" "}
-                      <Link
-                        href="/terms"
-                        className="text-primary hover:underline"
-                      >
+                      <Link href="/terms" className="text-primary hover:underline">
                         Terms of Service
                       </Link>{" "}
                       and{" "}
-                      <Link
-                        href="/privacy"
-                        className="text-primary hover:underline"
-                      >
+                      <Link href="/privacy" className="text-primary hover:underline">
                         Privacy Policy
                       </Link>
                     </Label>
@@ -403,5 +310,5 @@ export default function RegisterPage() {
         </Card>
       </main>
     </div>
-  );
+  )
 }

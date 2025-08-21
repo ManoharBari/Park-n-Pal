@@ -46,7 +46,7 @@ export function UserSidebar({ className }: UserSidebarProps) {
     <>
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="md:hidden">
+          <Button variant="outline" size="icon" className="md:hidden bg-transparent">
             <Menu />
             <span className="sr-only">Toggle Menu</span>
           </Button>
@@ -55,7 +55,7 @@ export function UserSidebar({ className }: UserSidebarProps) {
           <MobileSidebar routes={routes} />
         </SheetContent>
       </Sheet>
-      <div className={cn("hidden h-screen border-r md:block", className)}>
+      <div className={cn("hidden md:block fixed left-0 top-0 h-screen w-64 border-r bg-background z-30", className)}>
         <div className="flex h-full flex-col">
           <div className="flex h-14 items-center border-b px-4">
             <Link href="/user/dashboard" className="flex items-center gap-2 font-semibold">

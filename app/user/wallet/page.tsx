@@ -100,27 +100,35 @@ export default function UserWallet() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="flex flex-1">
-        <UserSidebar className="hidden w-64 md:block" />
-        <main className="flex-1 pb-20 md:pb-0">
-          {/* Mobile Header */}
-          <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
-            <div className="flex h-16 items-center justify-between px-4">
-              <h1 className="text-lg font-semibold">Wallet</h1>
-              <Button variant="ghost" size="icon">
-                <Plus className="h-5 w-5" />
-              </Button>
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Desktop Sidebar - Fixed */}
+      <UserSidebar />
+
+      {/* Main Content Area */}
+      <div className="flex-1 md:ml-64">
+        {/* Mobile Header */}
+        <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+          <div className="flex h-16 items-center justify-between px-4">
+            <h1 className="text-lg font-semibold">Wallet</h1>
+            <Button variant="ghost" size="icon">
+              <Plus className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Scrollable Content Area */}
+        <div className="h-screen overflow-y-auto pb-20 md:pb-0">
+          {/* Desktop Header */}
+          <div className="hidden md:block">
+            <div className="container mx-auto p-4 md:p-6">
+              <div className="mb-6">
+                <h1 className="text-2xl font-bold">Wallet</h1>
+                <p className="text-muted-foreground">Manage your payment methods and wallet balance</p>
+              </div>
             </div>
           </div>
 
           <div className="container mx-auto p-4 space-y-6">
-            {/* Desktop Header */}
-            <div className="hidden md:block">
-              <h1 className="text-2xl font-bold">Wallet</h1>
-              <p className="text-muted-foreground">Manage your payment methods and wallet balance</p>
-            </div>
-
             {/* Balance Card - Mobile Optimized */}
             <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
               <CardContent className="p-6">
@@ -272,8 +280,10 @@ export default function UserWallet() {
               </CardContent>
             </Card>
           </div>
-        </main>
+        </div>
       </div>
+
+      {/* Mobile Navigation */}
       <MobileNav />
     </div>
   )

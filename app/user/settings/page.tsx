@@ -66,24 +66,32 @@ export default function UserSettings() {
   })
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="flex flex-1">
-        <UserSidebar className="hidden w-64 md:block" />
-        <main className="flex-1 pb-20 md:pb-0">
-          {/* Mobile Header */}
-          <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
-            <div className="flex h-16 items-center justify-between px-4">
-              <h1 className="text-lg font-semibold">Settings</h1>
+    <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Desktop Sidebar - Fixed */}
+      <UserSidebar className="hidden w-64 md:block" />
+
+      {/* Main Content Area */}
+      <div className="flex-1 md:ml-64">
+        {/* Mobile Header */}
+        <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:hidden">
+          <div className="flex h-16 items-center justify-between px-4">
+            <h1 className="text-lg font-semibold">Settings</h1>
+          </div>
+        </div>
+
+        {/* Scrollable Content Area */}
+        <div className="h-screen overflow-y-auto pb-20 md:pb-0">
+          {/* Desktop Header */}
+          <div className="hidden md:block">
+            <div className="container mx-auto p-4 md:p-6">
+              <div className="mb-6">
+                <h1 className="text-2xl font-bold">Settings</h1>
+                <p className="text-muted-foreground">Manage your account settings and preferences</p>
+              </div>
             </div>
           </div>
 
           <div className="container mx-auto p-4 space-y-6">
-            {/* Desktop Header */}
-            <div className="hidden md:block">
-              <h1 className="text-2xl font-bold">Settings</h1>
-              <p className="text-muted-foreground">Manage your account settings and preferences</p>
-            </div>
-
             {/* Profile Section - Mobile */}
             <Card>
               <CardContent className="p-4">
@@ -235,8 +243,10 @@ export default function UserSettings() {
               <p>© 2024 Park'n'Pal. All rights reserved.</p>
             </div>
           </div>
-        </main>
+        </div>
       </div>
+
+      {/* Mobile Navigation */}
       <MobileNav />
     </div>
   )
